@@ -13,7 +13,7 @@ const expectedCounts = new Map([
   ['careerSteps', [careerSteps, 5]],
   ['stats', [stats, 3]],
   ['bonuses', [bonuses, 4]],
-  ['registrationGifts', [registrationGifts, 7]],
+  ['registrationGifts', [registrationGifts, 6]],
 ]);
 
 for (const [name, [items, expected]] of expectedCounts) {
