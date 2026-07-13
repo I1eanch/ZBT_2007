@@ -10,9 +10,10 @@ interface Props {
 const {
   title,
   description,
-  image = '/og-image.svg',
+  image = '/og-image.png',
 } = Astro.props;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+const ogImage = Astro.site ? new URL(image, Astro.site).href : image;
 ---
 
 <html lang="ru">
@@ -23,9 +24,20 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefin
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Школа «Ресурс»" />
+    <meta property="og:locale" content="ru_RU" />
+    {canonical && <meta property="og:url" content={canonical} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />

@@ -53,4 +53,19 @@ const asset = await fetchOk(assetPath);
 assertSecurityHeaders(assetPath, asset);
 assertHeader(assetPath, asset, 'cache-control', 'public, max-age=31536000, immutable');
 
+// Social sharing preview: the production build must resolve og:image to an
+// ABSOLUTE URL (crawlers reject relative paths), and nginx must serve the raster.
+const ogMatch = homeBody.match(/property="og:image" content="([^"]+)"/);
+if (!ogMatch) throw new Error('/: missing og:image meta');
+const ogUrl = ogMatch[1];
+if (!/^https:\/\/.+\/og-image\.png$/.test(ogUrl)) {
+  throw new Error(`/: og:image must be an absolute https URL to og-image.png, received "${ogUrl}"`);
+}
+if (!homeBody.includes('name="twitter:card" content="summary_large_image"')) {
+  throw new Error('/: missing twitter:card=summary_large_image');
+}
+const ogImage = await fetchOk('/og-image.png');
+assertSecurityHeaders('/og-image.png', ogImage);
+assertHeader('/og-image.png', ogImage, 'content-type', 'image/png');
+
 console.log('container smoke passed');
