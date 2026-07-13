@@ -76,25 +76,40 @@ test.describe('visual refinements — hero, facts, sticky CTA', () => {
     await expect(cta).toBeVisible();
   });
 
-  test('sticky CTA becomes hidden after scrolling data-sticky-stop into view and does not obscure consent/footer', async ({ page }) => {
+  test('sticky CTA stays hidden past the stop and does not obscure footer/legal links', async ({ page }) => {
+    // A short viewport guarantees enough content below [data-sticky-stop] that a
+    // full scroll pushes the stop entirely ABOVE the viewport — the exact state
+    // where a naive `isIntersecting` check flips back to false and lets the CTA
+    // reappear over the footer.
+    await page.setViewportSize({ width: 1280, height: 300 });
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    const stop = page.locator('[data-sticky-stop]');
-    await expect(stop).toBeVisible();
-
-    // Scroll the consent line into view; wait for sticky state via attribute
-    await stop.scrollIntoViewIfNeeded();
     const cta = page.locator('[data-sticky-cta]');
+    const stop = page.locator('[data-sticky-stop]');
+
+    // Baseline: stop scrolled into view → CTA hidden.
+    await stop.scrollIntoViewIfNeeded();
     await expect(cta).toHaveAttribute('data-hidden', 'true');
 
-    // Observable non-obstruction: CTA is visually absent and non-interactive
-    // while consent/footer line remains visible
+    // Scroll fully to the bottom so the stop leaves the viewport above the fold.
+    await page.evaluate(() => {
+      document.documentElement.style.scrollBehavior = 'auto';
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    // Precondition: the stop is genuinely above the viewport top.
+    await expect
+      .poll(async () => stop.evaluate((el) => el.getBoundingClientRect().bottom))
+      .toBeLessThan(0);
+
+    // The CTA must STAY hidden — it must not reappear and cover the footer/links.
+    await expect(cta).toHaveAttribute('data-hidden', 'true');
     await expect(cta).toHaveCSS('visibility', 'hidden');
     await expect(cta).toHaveCSS('pointer-events', 'none');
 
-    const footer = page.locator('#footer');
-    await expect(footer).toBeVisible();
+    // Footer legal links remain visible and unobstructed at the very bottom.
+    await expect(page.locator('#footer nav a').first()).toBeVisible();
   });
   test('disables sticky CTA transitions under reduced motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });

@@ -20,10 +20,10 @@ import Button from './ui/Button.astro';
 
   if (sticky && stopEl && heroEl) {
     let heroIntersects = true;
-    let stopIntersects = false;
+    let stopReached = false;
 
     const syncHidden = () => {
-      const hidden = heroIntersects || stopIntersects;
+      const hidden = heroIntersects || stopReached;
       sticky.dataset.hidden = hidden ? 'true' : 'false';
       sticky.setAttribute('aria-hidden', hidden ? 'true' : 'false');
 
@@ -49,7 +49,7 @@ import Button from './ui/Button.astro';
       stopIO = new IntersectionObserver((entries) => {
         const entry = entries[0];
         if (!entry) return;
-        stopIntersects = entry.isIntersecting;
+        stopReached = entry.isIntersecting || entry.boundingClientRect.top < (entry.rootBounds?.bottom ?? 0);
         syncHidden();
       }, { rootMargin, threshold: 0.05 });
       stopIO.observe(stopEl);
