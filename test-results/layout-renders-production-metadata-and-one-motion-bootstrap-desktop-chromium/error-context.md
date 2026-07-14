@@ -6,19 +6,23 @@
 
 # Test info
 
-- Name: registration.spec.ts >> registration CTA opens the widget modal and posts nothing from our origin
-- Location: tests/registration.spec.ts:5:1
+- Name: layout.spec.ts >> renders production metadata and one motion bootstrap
+- Location: tests/layout.spec.ts:3:1
 
 # Error details
 
 ```
-Test timeout of 30000ms exceeded.
+Error: expect(received).toHaveLength(expected)
+
+Expected length: 1
+Received length: 2
+Received array:  ["http://127.0.0.1:4321/src/lib/motion.ts", "http://127.0.0.1:4321/src/lib/motion.ts"]
 ```
 
 # Page snapshot
 
 ```yaml
-- generic [ref=e1]:
+- generic [active] [ref=e1]:
   - banner [ref=e2]:
     - navigation "Основная навигация" [ref=e3]:
       - list [ref=e4]:
@@ -208,13 +212,13 @@ Test timeout of 30000ms exceeded.
       - generic [ref=e222]: Не нужно медицинского образования и не нужно знать всё сразу. Нужно начать — а дальше система ведёт вас шаг за шагом. Именно с этого пути и начинается марафон.
     - generic [ref=e225]:
       - generic [ref=e226]:
-        - generic [ref=e227]: 3 500+
+        - generic [ref=e227]: 0+
         - generic [ref=e228]: прошли программы Марины
       - generic [ref=e229]:
-        - generic [ref=e230]: 7 лет
+        - generic [ref=e230]: 0 лет
         - generic [ref=e231]: практики и протоколов
       - generic [ref=e232]:
-        - generic [ref=e233]: +276%
+        - generic [ref=e233]: +0%
         - generic [ref=e234]: рост профессии за 20 лет
     - generic [ref=e236]:
       - generic [ref=e237]: Спикер
@@ -254,7 +258,7 @@ Test timeout of 30000ms exceeded.
       - heading "Забрать место и все подарки" [level=2] [ref=e276]
       - paragraph [ref=e277]: 20–22 июля · 18:00 МСК · Бесплатно
       - generic [ref=e278]:
-        - button "Регистрация — забрать место и все подарки" [active] [ref=e279] [cursor=pointer]
+        - button "Регистрация — забрать место и все подарки" [ref=e279] [cursor=pointer]
         - generic [ref=e280]:
           - generic [ref=e281]: "Вы получите:"
           - list [ref=e282]:
@@ -293,4 +297,40 @@ Test timeout of 30000ms exceeded.
           - /url: https://mylifemyhealth.ru/regulament
         - link "Публичная оферта" [ref=e312] [cursor=pointer]:
           - /url: https://mylifemyhealth.ru/public-offer
+```
+
+# Test source
+
+```ts
+  1  | import { expect, test } from '@playwright/test';
+  2  | 
+  3  | test('renders production metadata and one motion bootstrap', async ({ page }) => {
+  4  |   const motionModuleLoads: string[] = [];
+  5  |   page.on('request', (request) => {
+  6  |     if (/\/lib\/motion(\.\w+)?(\?|$)/.test(request.url())) {
+  7  |       motionModuleLoads.push(request.url());
+  8  |     }
+  9  |   });
+  10 | 
+  11 |   await page.goto('/');
+  12 |   await expect(page).toHaveTitle(/Здоровье без таблеток/);
+  13 |   await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /нутрициолог/);
+  14 |   await expect(page.locator('meta[property="og:title"]')).toHaveCount(1);
+  15 | 
+  16 |   // Social sharing preview: raster OG image with declared dimensions + Twitter card.
+  17 |   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/og-image\.png$/);
+  18 |   await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute('content', 'image/png');
+  19 |   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+  20 |   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
+  21 |   await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+  22 |   await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', /\/og-image\.png$/);
+  23 | 
+  24 |   // Layout is the single owner of motion. Astro externalises its framework-processed <script>,
+  25 |   // so we assert the bundled bootstrap's observable effect — loading src/lib/motion exactly once —
+  26 |   // rather than a marker attribute, which would force Astro `is:inline` and break bundling.
+  27 |   await page.waitForLoadState('networkidle');
+> 28 |   expect(motionModuleLoads).toHaveLength(1);
+     |                             ^ Error: expect(received).toHaveLength(expected)
+  29 | });
+  30 | 
 ```
