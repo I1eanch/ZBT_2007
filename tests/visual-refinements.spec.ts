@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test.describe('visual refinements — hero, facts, sticky CTA', () => {
   test('hero renders two successfully loaded local raster images', async ({ page }) => {

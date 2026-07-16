@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 const FINALS = ['3 500+', '7 лет', '+276%'];
 

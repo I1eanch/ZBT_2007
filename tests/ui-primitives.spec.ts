@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('CTA exposes a visible focus state and valid registration anchor', async ({ page }) => {
   await page.goto('/');

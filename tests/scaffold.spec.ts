@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('serves a Russian HTML document without runtime errors', async ({ page }) => {
   const errors: string[] = [];

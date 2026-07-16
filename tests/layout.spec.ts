@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('renders production metadata and one motion bootstrap', async ({ page }) => {
   const motionModuleLoads: string[] = [];
@@ -26,4 +26,53 @@ test('renders production metadata and one motion bootstrap', async ({ page }) =>
   // rather than a marker attribute, which would force Astro `is:inline` and break bundling.
   await page.waitForLoadState('networkidle');
   expect(motionModuleLoads).toHaveLength(1);
+});
+
+
+test('initializes Yandex Metrika with requested counter options', async ({ page }) => {
+  const metrikaRequests: string[] = [];
+  await page.route('https://mc.yandex.ru/**', async (route) => {
+    metrikaRequests.push(route.request().url());
+    await route.abort();
+  });
+
+  await page.goto('/');
+  const initCall = await page.evaluate(() => {
+    const queue = (window as typeof window & { ym?: { a?: ArrayLike<unknown>[] } }).ym?.a;
+    const [counterId, action, options] = Array.from(queue?.[0] ?? []);
+    return {
+      counterId,
+      action,
+      options,
+      currentReferrer: document.referrer,
+      currentUrl: location.href,
+    };
+  });
+
+  expect(metrikaRequests).toContain('https://mc.yandex.ru/metrika/tag.js');
+  expect(initCall.counterId).toBe(96074267);
+  expect(initCall.action).toBe('init');
+  expect(initCall.options).toEqual({
+    webvisor: true,
+    clickmap: true,
+    referrer: initCall.currentReferrer,
+    url: initCall.currentUrl,
+    accurateTrackBounce: true,
+    trackLinks: true,
+  });
+});
+
+test('renders Yandex Metrika noscript fallback first in body', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  await context.route('https://mc.yandex.ru/**', async (route) => {
+    await route.abort();
+  });
+  const page = await context.newPage();
+
+  await page.goto(baseURL!);
+  const fallback = page.locator('body > noscript:first-child img');
+  await expect(fallback).toHaveAttribute('src', 'https://mc.yandex.ru/watch/96074267');
+  await expect(fallback).toHaveAttribute('alt', '');
+
+  await context.close();
 });

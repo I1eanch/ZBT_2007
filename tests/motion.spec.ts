@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('keeps animated content visible when motion is reduced', async ({ page }) => {
   const pageErrors: string[] = [];

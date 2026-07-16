@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 
 test('loads approved brand tokens and typography', async ({ page }) => {
   await page.goto('/');
