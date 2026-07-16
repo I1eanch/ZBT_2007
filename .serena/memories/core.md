@@ -1,0 +1,11 @@
+# ZBT_2007
+- Одностраничный статический лендинг школы нутрициологии «Ресурс» на Astro.
+- Composition root: `src/pages/index.astro`; document shell и metadata: `src/layouts/Layout.astro`.
+- Повторяемый контент: `src/content/landing.ts`; секции: `src/components/*.astro`; UI-примитивы: `src/components/ui/`.
+- Централизованный motion bootstrap: `src/lib/motion.ts`; секции не импортируют GSAP.
+- `Maket.html` — неизменяемый reference prototype; SHA-256 контролируется тестами.
+- Build статический в `dist/`; production runtime — nginx/Docker/Dokploy.
+- Технологии и версии: `mem:tech_stack`.
+- Команды разработки: `mem:suggested_commands`.
+- Стиль и архитектурные инварианты: `mem:conventions`.
+- Release gate: `mem:task_completion`.
