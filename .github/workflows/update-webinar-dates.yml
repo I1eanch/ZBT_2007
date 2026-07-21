@@ -1,0 +1,38 @@
+name: Update webinar dates
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22.22.2
+
+      - run: npm run update:webinar-schedule
+
+      - name: Commit updated schedule
+        run: |
+          if git diff --quiet -- src/content/webinar-schedule.json; then
+            echo "Webinar schedule is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/content/webinar-schedule.json
+          git commit -m "chore: update webinar dates"
+          git push

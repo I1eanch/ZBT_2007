@@ -59,6 +59,30 @@ Health timeout: 3 seconds
 `PRODUCTION_DOMAIN` is a required operator input, not a repository default. The
 runbook must stop if it is empty (see [Preflight gate](#preflight-gate-fail-fast)).
 
+## Automated webinar schedule
+
+`.github/workflows/update-webinar-dates.yml` runs every Monday at `13:00 UTC`
+(`16:00 Europe/Moscow`) and may also be started manually through
+**Actions → Update webinar dates → Run workflow**. It updates only
+`src/content/webinar-schedule.json`, commits the change to `main`, and the existing
+repository-based Dokploy deployment rebuilds from that commit; no Dokploy cron or
+webhook configuration is required.
+
+The updater selects today's Monday only before `16:00 Europe/Moscow`; at or after
+that boundary, and on Tuesday through Sunday, it selects the next future Monday.
+This makes `workflow_dispatch` safe: it never restores a schedule that has already
+passed.
+
+Before enabling the workflow, configure the repository:
+
+```text
+Settings → Actions → General → Workflow permissions → Read and write permissions
+```
+
+If `main` is protected, also grant GitHub Actions permission to push to it or add
+an explicit branch-protection exception. Scheduled GitHub Actions jobs may start a
+few minutes late, after which Dokploy still needs its normal build/deployment time.
+
 ## Step 2 — Infrastructure prerequisites
 
 ```text

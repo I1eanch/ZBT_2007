@@ -3,6 +3,10 @@
 // (a[href="#registration"] или кнопка в секции #registration) открывается
 // поповер, в который лениво (при первом открытии) монтируется внешний
 // виджет-форма GetCourse. До первого открытия внешняя сеть не задействуется.
+import webinarConfig from '../content/webinar-schedule.json';
+import { buildWebinarSchedule } from '../lib/webinar-schedule';
+
+const webinarSchedule = buildWebinarSchedule(webinarConfig.startDate, webinarConfig.startTime);
 ---
 
 <div
@@ -41,7 +45,7 @@
           Здоровье без таблеток<br /><span class="text-[var(--color-rose-deep)]">от диагноза к профессии</span>
         </h2>
         <p class="mt-[var(--space-1)] font-brand-body text-[length:var(--fs-sm)] text-[var(--color-text-muted)]">
-          27–29 июля · 18:00 МСК · Бесплатно
+          {webinarSchedule.dateRangeWithTime} · Бесплатно
         </p>
       </div>
       <div class="px-[var(--space-5)] pb-[var(--space-8)]">

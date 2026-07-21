@@ -2,6 +2,10 @@
 import SectionLabel from './ui/SectionLabel.astro';
 import Button from './ui/Button.astro';
 import { registrationGifts } from '../content/landing';
+import webinarConfig from '../content/webinar-schedule.json';
+import { buildWebinarSchedule } from '../lib/webinar-schedule';
+
+const webinarSchedule = buildWebinarSchedule(webinarConfig.startDate, webinarConfig.startTime);
 
 ---
 
@@ -16,7 +20,7 @@ import { registrationGifts } from '../content/landing';
       Забрать место и все подарки
     </h2>
     <p class="mt-[var(--space-2)] font-brand-body text-[length:var(--fs-md)] text-[var(--color-sky-light)]">
-      27–29 июля · 18:00 МСК · Бесплатно
+      {webinarSchedule.dateRangeWithTime} · Бесплатно
     </p>
 
     <div class="mt-[var(--space-8)] flex flex-col items-center gap-[var(--space-5)]">

@@ -3,6 +3,10 @@ import Button from './ui/Button.astro';
 import { Image } from 'astro:assets';
 import heroBackground from '../assets/hero-background.jpg';
 import heroPortrait from '../assets/hero-wellness-illustration.jpg';
+import webinarConfig from '../content/webinar-schedule.json';
+import { buildWebinarSchedule } from '../lib/webinar-schedule';
+
+const webinarSchedule = buildWebinarSchedule(webinarConfig.startDate, webinarConfig.startTime);
 ---
 <section
   id="hero"
@@ -23,7 +27,7 @@ import heroPortrait from '../assets/hero-wellness-illustration.jpg';
   <span
     class="relative z-20 mb-[var(--space-5)] inline-block max-w-full rounded-[var(--radius-pill)] border border-[color-mix(in_srgb,var(--color-rose)_35%,transparent)] bg-[color-mix(in_srgb,var(--color-blush)_80%,var(--color-white))] px-[var(--space-4)] py-[var(--space-3)] font-brand-body text-[length:var(--fs-sm)] font-bold uppercase tracking-[var(--ls-wide)] text-[var(--color-rose-deep)] shadow-[var(--shadow-sm)] min-[700px]:px-[var(--space-5)] min-[700px]:text-[length:var(--fs-base)] min-[700px]:tracking-[var(--ls-widest)]"
   >
-    Бесплатный марафон · 27–29 июля
+    Бесплатный марафон · {webinarSchedule.dateRange}
   </span>
 
   <div
@@ -78,7 +82,7 @@ import heroPortrait from '../assets/hero-wellness-illustration.jpg';
         class="flex h-[var(--space-10)] w-[var(--space-10)] items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--color-white)_70%,transparent)] text-[length:var(--fs-base)] shadow-[var(--shadow-xs)]"
         aria-hidden="true">📅</span
       >
-      <span data-fact-text>27–29 июля · 18:00 МСК</span>
+      <span data-fact-text>{webinarSchedule.dateRangeWithTime}</span>
     </div>
     <div
       data-fact-item

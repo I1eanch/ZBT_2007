@@ -5,6 +5,10 @@ import { programDays } from '../content/landing';
 import programDay1 from '../assets/program-day-1.jpg';
 import programDay2 from '../assets/program-day-2.jpg';
 import programDay3 from '../assets/program-day-3.jpg';
+import webinarConfig from '../content/webinar-schedule.json';
+import { buildWebinarSchedule } from '../lib/webinar-schedule';
+
+const webinarSchedule = buildWebinarSchedule(webinarConfig.startDate, webinarConfig.startTime);
 
 const dayImage = {
   1: programDay1,
@@ -52,7 +56,7 @@ const giftTone: Record<'blush' | 'sky' | 'mixed', string> = {
                   День {day.day}
                 </span>
                 <div class="mt-[var(--space-2)] font-brand-body text-[length:var(--fs-sm)] font-semibold text-[var(--color-rose-deep)]">
-                  {day.date}
+                  {webinarSchedule.days[day.day - 1].dateWithTime}
                 </div>
                 <h3 class="mt-[var(--space-1)] font-brand-heading text-[length:var(--fs-md)] font-bold leading-[var(--lh-snug)] text-[var(--color-text)]">
                   {day.title}

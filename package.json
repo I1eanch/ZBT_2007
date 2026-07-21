@@ -13,6 +13,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "validate:content": "node --experimental-strip-types scripts/validate-content.mjs",
+    "test:webinar-schedule": "node --experimental-strip-types scripts/test-webinar-schedule.mjs",
+    "update:webinar-schedule": "node --experimental-strip-types scripts/update-webinar-schedule.mjs",
     "test:e2e": "playwright test",
     "verify": "npm run validate:content && npm run check && npm run build && npm run test:e2e",
     "smoke:container": "node scripts/smoke-container.mjs"
